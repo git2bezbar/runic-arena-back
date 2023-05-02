@@ -9,3 +9,97 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Class {
+  id            Int @id @default(autoincrement())
+  name          String
+  description   String
+  card          Card[]
+}
+
+model Type {
+  id            Int @id @default(autoincrement())
+  name          String
+  description   String
+  card          Card[]
+}
+
+model Card {
+  id            Int @id @default(autoincrement())
+  name          String
+  surname       String
+  illustration  String
+  power         Int
+  class         Class  @relation(fields: [classId], references: [id])
+  classId       Int
+  type          Type  @relation(fields: [typeId], references: [id])
+  typeId        Int
+  actives       ActiveOnCard[]
+  passive       Passive  @relation(fields: [passiveId], references: [id])
+  passiveId     Int  
+}
+
+model Passive {
+  id            Int @id @default(autoincrement())
+  card          Card[]
+  condition     Condition  @relation(fields: [conditionId], references: [id])
+  conditionId   Int  
+  skill         Skill  @relation(fields: [skillId], references: [id])
+  skillId       Int   
+}
+
+model Active {
+  id        Int @id @default(autoincrement())
+  card      ActiveOnCard[]
+  cost      CostOnActive[]
+  skill     Skill  @relation(fields: [skillId], references: [id])
+  skillId   Int
+}
+
+model ActiveOnCard{
+  card      Card @relation(fields: [idCard],references: [id])
+  idCard    Int
+  active    Active @relation(fields: [idActive],references: [id])
+  idActive  Int
+  @@id([idCard, idActive])
+}
+
+model Cost {
+  id      Int @id @default(autoincrement())
+  amout   Int
+  color   String
+  active  CostOnActive[]
+}
+
+model CostOnActive{
+  active      Active @relation(fields: [idActive],references: [id])
+  idActive    Int
+  cost        Cost @relation(fields: [idCost],references: [id])
+  idCost      Int
+  @@id([idActive, idCost])
+}
+
+model Skill {
+  id            Int @id @default(autoincrement())
+  name          String
+  passive       Passive[]
+  active        Active[]
+  amout         String
+  isPercentage  Boolean @default(false)
+  ability       Ability  @relation(fields: [abilityId], references: [id])
+  abilityId     Int
+}
+
+model Ability {
+  id            Int @id @default(autoincrement())
+  name          String
+  description   String
+  skill         Skill[]
+}
+
+model Condition {
+  id            Int @id @default(autoincrement())
+  name          String
+  description   String
+  passive       Passive[]
+}
