@@ -34,6 +34,8 @@ router.get('/:id', async function(req, res, next) {
   }
 });
 
+
+
 /* Mise à jour type */
 router.post('/:id', async function(req, res, next) {
   try{
@@ -97,4 +99,7 @@ router.delete('/:id', async function(req, res, next) {
     })
   }
 });
+
+
 module.exports = router;
+
