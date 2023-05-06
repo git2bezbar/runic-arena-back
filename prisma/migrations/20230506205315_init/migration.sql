@@ -34,7 +34,7 @@ CREATE TABLE `Card` (
 CREATE TABLE `Passive` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `conditionId` INTEGER NOT NULL,
-    `skillId` INTEGER NOT NULL,
+    `abilityId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -42,7 +42,7 @@ CREATE TABLE `Passive` (
 -- CreateTable
 CREATE TABLE `Active` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `skillId` INTEGER NOT NULL,
+    `abilityId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -73,21 +73,21 @@ CREATE TABLE `CostOnActive` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Skill` (
+CREATE TABLE `Ability` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `amout` VARCHAR(191) NOT NULL,
-    `isPercentage` BOOLEAN NOT NULL DEFAULT false,
-    `abilityId` INTEGER NOT NULL,
+    `skillId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Ability` (
+CREATE TABLE `Skill` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
+    `isPercentage` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -114,10 +114,10 @@ ALTER TABLE `Card` ADD CONSTRAINT `Card_passiveId_fkey` FOREIGN KEY (`passiveId`
 ALTER TABLE `Passive` ADD CONSTRAINT `Passive_conditionId_fkey` FOREIGN KEY (`conditionId`) REFERENCES `Condition`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Passive` ADD CONSTRAINT `Passive_skillId_fkey` FOREIGN KEY (`skillId`) REFERENCES `Skill`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Passive` ADD CONSTRAINT `Passive_abilityId_fkey` FOREIGN KEY (`abilityId`) REFERENCES `Ability`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Active` ADD CONSTRAINT `Active_skillId_fkey` FOREIGN KEY (`skillId`) REFERENCES `Skill`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Active` ADD CONSTRAINT `Active_abilityId_fkey` FOREIGN KEY (`abilityId`) REFERENCES `Ability`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ActiveOnCard` ADD CONSTRAINT `ActiveOnCard_idCard_fkey` FOREIGN KEY (`idCard`) REFERENCES `Card`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -132,4 +132,4 @@ ALTER TABLE `CostOnActive` ADD CONSTRAINT `CostOnActive_idActive_fkey` FOREIGN K
 ALTER TABLE `CostOnActive` ADD CONSTRAINT `CostOnActive_idCost_fkey` FOREIGN KEY (`idCost`) REFERENCES `Cost`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Skill` ADD CONSTRAINT `Skill_abilityId_fkey` FOREIGN KEY (`abilityId`) REFERENCES `Ability`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Ability` ADD CONSTRAINT `Ability_skillId_fkey` FOREIGN KEY (`skillId`) REFERENCES `Skill`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

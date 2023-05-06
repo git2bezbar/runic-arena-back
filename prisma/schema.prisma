@@ -44,16 +44,16 @@ model Passive {
   card          Card[]
   condition     Condition  @relation(fields: [conditionId], references: [id])
   conditionId   Int  
-  skill         Skill  @relation(fields: [skillId], references: [id])
-  skillId       Int   
+  ability       Ability  @relation(fields: [abilityId], references: [id])
+  abilityId     Int   
 }
 
 model Active {
   id        Int @id @default(autoincrement())
   card      ActiveOnCard[]
   cost      CostOnActive[]
-  skill     Skill  @relation(fields: [skillId], references: [id])
-  skillId   Int
+  ability   Ability  @relation(fields: [abilityId], references: [id])
+  abilityId Int
 }
 
 model ActiveOnCard{
@@ -79,22 +79,22 @@ model CostOnActive{
   @@id([idActive, idCost])
 }
 
-model Skill {
-  id            Int @id @default(autoincrement())
-  name          String
-  passive       Passive[]
-  active        Active[]
-  amout         String
-  isPercentage  Boolean @default(false)
-  ability       Ability  @relation(fields: [abilityId], references: [id])
-  abilityId     Int
-}
-
 model Ability {
   id            Int @id @default(autoincrement())
   name          String
+  amout         String
+  passive       Passive[]
+  active        Active[]
+  skill         Skill  @relation(fields: [skillId], references: [id])
+  skillId       Int
+}
+
+model Skill {
+  id            Int @id @default(autoincrement())
+  name          String
   description   String
-  skill         Skill[]
+  isPercentage  Boolean @default(false)
+  ability       Ability[]
 }
 
 model Condition {
