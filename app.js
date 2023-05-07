@@ -21,6 +21,6 @@ app.use('/cards', cardsRouter);
 app.use('/classes', classesRouter);
 app.use('/skills', skillsRouter);
 app.use('/types', typesRouter);
-app.use('/ability', typesRouter);
+app.use('/ability', abilityRouter);
 
 module.exports = app;
