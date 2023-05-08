@@ -4,8 +4,16 @@ const prisma = new PrismaClient();
 var router = express.Router();
 
 /* GET cards listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/', async function(req, res, next) {
+  try{
+    const cards = await prisma.card.findMany()
+    res.send(cards)
+  }catch(error){
+    console.log(error.message)
+    res.status(500).json({
+      message:"Internal Server Error"
+    })
+  }
 });
 
 module.exports = router;
