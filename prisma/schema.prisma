@@ -66,7 +66,7 @@ model ActiveOnCard{
 
 model Cost {
   id      Int @id @default(autoincrement())
-  amout   Int
+  amount   Int
   color   String
   active  CostOnActive[]
 }
@@ -82,7 +82,7 @@ model CostOnActive{
 model Ability {
   id            Int @id @default(autoincrement())
   name          String
-  amout         String
+  amount        Int
   passive       Passive[]
   active        Active[]
   skill         Skill  @relation(fields: [skillId], references: [id])
