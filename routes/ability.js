@@ -64,12 +64,12 @@ router.post('/:id', async function(req, res, next) {
 /* Ajout ability */
 router.put('/', async function(req, res, next) {
   try{
-    const {name, description,skillId} = req.body
+    const {name, amount,skillId} = req.body
     
     const newAbility = await prisma.ability.create({
       data:{
         name,
-        description,
+        amount,
         skillId
       }
     })
