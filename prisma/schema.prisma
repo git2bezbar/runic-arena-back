@@ -103,3 +103,13 @@ model Condition {
   description   String
   passive       Passive[]
 }
+
+model Name {
+  id            Int @id @default(autoincrement())
+  name          String
+}
+
+model Surname {
+  id            Int @id @default(autoincrement())
+  name          String
+}
