@@ -39,19 +39,20 @@ router.get('/:id', async function(req, res, next) {
 /* Mise à jour type */
 router.post('/:id', async function(req, res, next) {
   try{
-    const {name, description} = req.body
+    const {name, amount, skillId} = req.body
     const id = parseInt(req.params.id)
-    const updatedType = await prisma.type.update({
+    const updatedAbility = await prisma.ability.update({
       where:{
         id:id
       },
       data:{
         name,
-        description
+        amount,
+        skillId
       }
     })
     
-    res.send(updatedType)
+    res.send(updatedAbility)
   }catch(error){
     console.log(error.message)
     res.status(500).json({
@@ -83,16 +84,16 @@ router.put('/', async function(req, res, next) {
   }
 });
 
-/* Suppression type */
+/* Suppression ability */
 router.delete('/:id', async function(req, res, next) {
   try{
     const id = parseInt(req.params.id)
-    const deleteType = await prisma.type.delete({
+    const deleteAbility = await prisma.ability.delete({
       where:{
         id:id
       }
     })
-    res.send(deleteType)
+    res.send(deleteAbility)
   }catch(error){
     console.log(error.message)
     res.status(500).json({
