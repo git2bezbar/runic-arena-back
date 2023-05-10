@@ -7,8 +7,8 @@ router.route('/')
   .get(async function(req, res, next) {
     /* Affichage complet */
     try {
-      const classes = await prisma.class.findMany();
-      res.send(classes);
+      const abilities = await prisma.ability.findMany();
+      res.send(abilities);
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
@@ -17,16 +17,17 @@ router.route('/')
     }
   })
   .post(async function(req, res, next) {
-    /* Ajout Classe */
+    /* Ajout ability */
     try {
-      const { name, description } = req.body;
-      const newClasse = await prisma.class.create({
+      const { name, amount,skillId } = req.body;
+      const newAbility = await prisma.ability.create({
         data: {
           name,
-          description,
+          amount,
+          skillId,
         },
-      })
-      res.send(newClasse);
+      });
+      res.send(newAbility);
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
@@ -37,15 +38,15 @@ router.route('/')
 
 router.route('/:id')
   .get(async function(req, res, next) {
-    /* Affichage unitaire classe */
+    /* Affichage unitaire */
     try {
       const id = parseInt(req.params.id);
-      const classe = await prisma.class.findUnique({
+      const ability = await prisma.ability.findUnique({
         where: {
           id,
-        },
+        }
       });
-      res.send(classe);
+      res.send(ability);
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
@@ -54,20 +55,21 @@ router.route('/:id')
     }
   })
   .put(async function(req, res, next) {
-    /* Mise à jour classe */
-    try{
-      const { name, description } = req.body;
+    /* Mise à jour type */
+    try {
+      const { name, amount, skillId } = req.body;
       const id = parseInt(req.params.id);
-      const updatedClasse = await prisma.class.update({
+      const updatedAbility = await prisma.ability.update({
         where: {
           id,
         },
         data: {
           name,
-          description,
+          amount,
+          skillId,
         },
       })
-      res.send(updatedClasse);
+      res.send(updatedAbility);
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
@@ -76,15 +78,15 @@ router.route('/:id')
     }
   })
   .delete(async function(req, res, next) {
-    /* Suppression type */
+    /* Suppression ability */
     try{
       const id = parseInt(req.params.id);
-      const deleteClasse = await prisma.class.delete({
+      const deleteAbility = await prisma.ability.delete({
         where: {
           id,
         },
-      });
-      res.send(deleteClasse);
+      })
+      res.send(deleteAbility);
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
@@ -94,3 +96,4 @@ router.route('/:id')
   });
 
 module.exports = router;
+
