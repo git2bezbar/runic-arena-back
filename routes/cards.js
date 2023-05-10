@@ -40,22 +40,24 @@ router.get('/:id', async function(req, res, next) {
 router.put('/:id', async function(req, res, next) {
   try{
     const {
-      name, surname,illustration, typeId, classId, power,abilityIdActive1, costId1Active1,costId2Active1, abilityIdActive2, costId1Active2,costId2Active2,
-      abilityIdPassive1, conditionId
+      name, surname,illustration, typeId, classId, power,
+      abilityIdActive1, costId1Active1,costId2Active1, 
+      abilityIdActive2, costId1Active2,costId2Active2,
+      abilityIdPassive, conditionId
     } = req.body
     const id = parseInt(req.params.id)
     
     // Ajout et teste des capacités passive 
     const passive = await prisma.passive.findFirst({
       where:{
-        abilityId:abilityIdPassive1,
+        abilityId:abilityIdPassive,
         conditionId
       }
     })
     if(!passive){
       const newPassive = await prisma.passive.create({
         data:{
-          abilityId:abilityIdPassive1,
+          abilityId:abilityIdPassive,
           conditionId
         }
       })
@@ -159,61 +161,34 @@ router.put('/:id', async function(req, res, next) {
         power,
         classId,
         typeId,
-        passiveId: passive.id||newPassive.id
+        passiveId: passive.id || newPassive.id
       }
     })
     
     // Ajout des actifs sur la carte
-    const ActiveOnCard = await prisma.activeOnCard.findFirst.update({
-      where:{
-        idCard:id
+    const deleteActiveOnCard = await prisma.activeOnCard.deleteMany({
+      where: {
+        idCard: id,
       },
+    });
+    // Ajout des actifs sur la carte
+    const ActiveOnCard = await prisma.activeOnCard.create({
       data:{
-        idActive: active.id||newActive.id
+        idCard:id,
+        idActive: active1.id||newActive1.id
       }
     })
-
-
-    const listActiveOnCard = await prisma.activeOnCard.findMany({
-      where:{
-        idCard:id
-      }
-    })
-    const ActiveOnCard2 = listActiveOnCard[1]
-    if(ActiveOnCard2){
-      if(!active2 || !newActive2){
-        const Active2OnCard = await prisma.activeOnCard.update({
-          where:{
-            id:ActiveOnCard2.id
-          },
-          data:{
-            idActive: active2.id||newActive2.id
-          }
-        })
-      }
-      else{
-        const Active2OnCard = await prisma.activeOnCard.delete({
-          where:{
-            id:ActiveOnCard2.id
-          }
-        })
-      }
-    }
-    else{
-      if(!active2 || !newActive2){
-        const Active2OnCard = await prisma.activeOnCard.create({
-          data:{
-            idCard:id,
-            idActive: active2.id||newActive2.id
-          }
-        })
-      }
-    }
-    
-    
+    if(abilityIdActive2){
+      const Active2OnCard = await prisma.activeOnCard.create({
+        data:{
+          idCard:id,
+          idActive: active2.id || newActive2.id
+        }
+      })
+    }    
     res.send()
   }catch(error){
-    console.log(error.message)
+    console.log(error)
     res.status(500).json({
       message:"Internal Server Error"
     })
@@ -223,7 +198,7 @@ router.put('/:id', async function(req, res, next) {
 
 
 /* Ajout card */
-router.put('/', async function(req, res, next) {
+router.post('/', async function(req, res, next) {
   try{
     const {
       name, surname,illustration, typeId, classId, power,abilityIdActive1, costId1Active1,costId2Active1, abilityIdActive2, costId1Active2,costId2Active2,
@@ -245,7 +220,6 @@ router.put('/', async function(req, res, next) {
         }
       })
     }
-
     // Ajout et teste des capacités active 1 et 2 
     const active1 = await prisma.active.findFirst({
       where:{
@@ -302,6 +276,7 @@ router.put('/', async function(req, res, next) {
       })
     }
     // Cost On Active 2 si il y a
+    
     if(active2 || newActive2){
       const cost1OnActive2 = await prisma.costOnActive.findFirst({
         where:{
@@ -332,6 +307,7 @@ router.put('/', async function(req, res, next) {
         })
       }
     }
+
     // Création de la carte
     const newCard = await prisma.card.create({
       data:{
@@ -349,20 +325,21 @@ router.put('/', async function(req, res, next) {
     const ActiveOnCard = await prisma.activeOnCard.create({
       data:{
         idCard:newCard.id,
-        idActive: active.id||newActive.id
+        idActive: active1.id||newActive1.id
       }
     })
-    if(!active2 || !newActive2){
+    if(abilityIdActive2){
       const Active2OnCard = await prisma.activeOnCard.create({
         data:{
           idCard:newCard.id,
-          idActive: active2.id||newActive2.id
+          idActive: active2.id || newActive2.id
         }
       })
     }
+
     res.send()
   }catch(error){
-    console.log(error.message)
+    console.log(error)
     res.status(500).json({
       message:"Internal Server Error"
     })
