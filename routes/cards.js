@@ -43,25 +43,24 @@ router.route('/')
           conditionId,
         }
       });
-
+      let newPassive
       if (!passive) {
-        const newPassive = await prisma.passive.create({
+        newPassive = await prisma.passive.create({
           data:{
             abilityId: abilityIdPassive1,
             conditionId
           }
         });
-      }
-
+      }   
       // Ajout et teste des capacités active 1 et 2 
       const active1 = await prisma.active.findFirst({
         where: {
           abilityId: abilityIdActive1,
         }
       });
-
+      let newActive
       if (!active1) {
-        const newActive = await prisma.active.create({
+        newActive = await prisma.active.create({
           data:{
             abilityId: abilityIdActive1,
           }
@@ -74,8 +73,9 @@ router.route('/')
         }
       });
 
+      let newActive2
       if (!active2 && abilityIdActive2) {
-        const newActive2 = await prisma.active.create({
+        newActive2 = await prisma.active.create({
           data: {
             abilityId:abilityIdActive2,
           }
@@ -85,15 +85,16 @@ router.route('/')
       // Ajout et teste CostOnActive
       const cost1OnActive1 = await prisma.costOnActive.findFirst({
         where: {
-          idActive: active1.id || newActive1.id,
+          idActive: active1 ? active1.id : newActive1.id,
           idCost: costId1Active1,
         }
       });
 
+      let newCost1OnActive1
       if (!cost1OnActive1) {
-        const newCost1OnActive1 = await prisma.costOnActive.create({
+        newCost1OnActive1 = await prisma.costOnActive.create({
           data: {
-            idActive: active1.id || newActive1.id,
+            idActive: active1 ? active1.id : newActive1.id,
             idCost: costId1Active1,
           }
         });
@@ -101,15 +102,16 @@ router.route('/')
 
       const cost2OnActive1 = await prisma.costOnActive.findFirst({
         where: {
-          idActive: active1.id || newActive1.id,
+          idActive: active1 ? active1.id : newActive1.id,
           idCost: costId2Active1,
         }
       });
 
+      let newCost2OnActive1
       if (!cost2OnActive1 && costId2Active1) {
-        const newCost2OnActive1 = await prisma.costOnActive.create({
+        newCost2OnActive1 = await prisma.costOnActive.create({
           data: {
-            idActive: active1.id || newActive1.id,
+            idActive: active1 ? active1.id : newActive1.id,
             idCost: costId2Active1,
           }
         });
@@ -119,15 +121,16 @@ router.route('/')
       if (active2 || newActive2) {
         const cost1OnActive2 = await prisma.costOnActive.findFirst({
           where: {
-            idActive: active2.id || newActive2.id,
+            idActive: active2 ? active2.id : newActive2.id,
             idCost: costId1Active2,
           }
         });
 
+        let newCost1OnActive2
         if (!cost1OnActive2) {
-          const newCost1OnActive2 = await prisma.costOnActive.create({
+          newCost1OnActive2 = await prisma.costOnActive.create({
             data: {
-              idActive: active2.id || newActive2.id,
+              idActive: active2 ? active2.id : newActive2.id,
               idCost: costId1Active2,
             }
           })
@@ -135,15 +138,16 @@ router.route('/')
 
         const cost2OnActive2 = await prisma.costOnActive.findFirst({
           where: {
-            idActive: active2.id || newActive2.id,
+            idActive: active2 ? active2.id : newActive2.id,
             idCost: costId2Active2,
           }
         });
 
+        let newCost2OnActive2
         if (!cost2OnActive2 && costId2Active2) {
-          const newCost2OnActive2 = await prisma.costOnActive.create({
+          newCost2OnActive2 = await prisma.costOnActive.create({
             data: {
-              idActive: active2.id || newActive2.id,
+              idActive: active2 ? active2.id : newActive2.id,
               idCost: costId2Active2,
             }
           });
@@ -159,7 +163,7 @@ router.route('/')
           power,
           classId,
           typeId,
-          passiveId: passive.id||newPassive.id,
+          passiveId:passive ? passive.id : newPassive.id,
         }
       })
       
@@ -167,15 +171,15 @@ router.route('/')
       const ActiveOnCard = await prisma.activeOnCard.create({
         data: {
           idCard:newCard.id,
-          idActive: active1.id||newActive1.id,
+          idActive: active1 ? active1.id : newActive1.id,
         }
       });
 
-      if (abilityIdActive2){
+      if(abilityIdActive2){
         const Active2OnCard = await prisma.activeOnCard.create({
           data: {
             idCard:newCard.id,
-            idActive: active2.id || newActive2.id,
+            idActive: active2 ? active2.id : newActive2.id,
           }
         });
       }
@@ -236,8 +240,9 @@ router.route("/:id")
         }
       });
 
+      let newPassive
       if (!passive) {
-        const newPassive = await prisma.passive.create({
+        newPassive = await prisma.passive.create({
           data: {
             abilityId: abilityIdPassive,
             conditionId,
@@ -252,8 +257,9 @@ router.route("/:id")
         }
       });
 
+      let newActive
       if (!active1) {
-        const newActive = await prisma.active.create({
+        newActive = await prisma.active.create({
           data: {
             abilityId: abilityIdActive1,
           }
@@ -265,6 +271,7 @@ router.route("/:id")
         }
       });
 
+      let newActive2
       if (!active2 && abilityIdActive2) {
         const newActive2 = await prisma.active.create({
           data: {
@@ -276,7 +283,7 @@ router.route("/:id")
       // Ajout et teste CostOnActive
       const cost1OnActive1 = await prisma.costOnActive.findFirst({
         where: {
-          idActive: active1.id || newActive1.id,
+          idActive: active1 ? active1.id : newActive1.id,
           idCost: costId1Active1,
         }
       });
@@ -284,14 +291,14 @@ router.route("/:id")
       if (!cost1OnActive1) {
         const newCost1OnActive1 = await prisma.costOnActive.create({
           data: {
-            idActive: active1.id || newActive1.id,
+            idActive: active1 ?active1.id : newActive1.id,
             idCost: costId1Active1,
           }
         });
       }
       const cost2OnActive1 = await prisma.costOnActive.findFirst({
         where: {
-          idActive: active1.id || newActive1.id,
+          idActive: active1 ? active1.id : newActive1.id,
           idCost: costId2Active1,
         }
       });
@@ -299,7 +306,7 @@ router.route("/:id")
       if (!cost2OnActive1 && costId2Active1) {
         const newCost2OnActive1 = await prisma.costOnActive.create({
           data: {
-            idActive: active1.id || newActive1.id,
+            idActive: active1 ? active1.id : newActive1.id,
             idCost: costId2Active1,
           }
         });
@@ -309,7 +316,7 @@ router.route("/:id")
       if (active2 || newActive2) {
         const cost1OnActive2 = await prisma.costOnActive.findFirst({
           where: {
-            idActive: active2.id || newActive2.id,
+            idActive: active2 ? active2.id : newActive2.id,
             idCost: costId1Active2
           }
         });
@@ -317,14 +324,14 @@ router.route("/:id")
         if (!cost1OnActive2) {
           const newCost1OnActive2 = await prisma.costOnActive.create({
             data: {
-              idActive: active2.id || newActive2.id,
+              idActive: active2 ? active2.id : newActive2.id,
               idCost: costId1Active2,
             }
           });
         }
         const cost2OnActive2 = await prisma.costOnActive.findFirst({
           where: {
-            idActive: active2.id || newActive2.id,
+            idActive: active2 ? active2.id : newActive2.id,
             idCost: costId2Active2,
           }
         });
@@ -332,7 +339,7 @@ router.route("/:id")
         if (!cost2OnActive2 && costId2Active2) {
           const newCost2OnActive2 = await prisma.costOnActive.create({
             data: {
-              idActive: active2.id || newActive2.id,
+              idActive: active2 ? active2.id : newActive2.id,
               idCost: costId2Active2,
             }
           });
@@ -351,7 +358,7 @@ router.route("/:id")
           power,
           classId,
           typeId,
-          passiveId: passive.id || newPassive.id,
+          passiveId: passive ? passive.id : newPassive.id,
         },
       });
       
@@ -366,7 +373,7 @@ router.route("/:id")
       const ActiveOnCard = await prisma.activeOnCard.create({
         data: {
           idCard:id,
-          idActive: active1.id||newActive1.id,
+          idActive: active1 ? active1.id : newActive1.id,
         }
       });
 
@@ -374,7 +381,7 @@ router.route("/:id")
         const Active2OnCard = await prisma.activeOnCard.create({
           data: {
             idCard:id,
-            idActive: active2.id || newActive2.id,
+            idActive: active2 ? active2.id : newActive2.id,
           }
         });
       }    
