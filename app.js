@@ -9,6 +9,7 @@ var classesRouter = require('./routes/classes');
 var skillsRouter = require('./routes/skills');
 var typesRouter = require('./routes/types');
 var abilitiesRouter = require('./routes/abilities');
+var conditionsRouter = require('./routes/conditions');
 
 var app = express();
 
@@ -24,5 +25,6 @@ app.use('/classes', classesRouter);
 app.use('/skills', skillsRouter);
 app.use('/types', typesRouter);
 app.use('/abilities', abilitiesRouter);
+app.use('/conditions', conditionsRouter);
 
 module.exports = app;
