@@ -2,13 +2,46 @@ var express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 var router = express.Router();
+const multer  = require('multer');
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'public/images')
+  },
+  filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname))
+  }
+})
+var upload = multer({ storage: storage});
 
 router.route('/')
   .get(async function(req, res, next) {
     /* Affichage complet */
     try {
       const cards = await prisma.card.findMany();
-      res.send(cards);
+      Promise.all(cards.map(async (card, i) => {
+        let activeAbilities = await prisma.activeOnCard.findMany({
+          where: {
+            idCard: card.id,
+          },
+        });
+        card.active = activeAbilities.length;
+        let classObj = await prisma.class.findUnique({
+          where: {
+            id: card.classId,
+          },
+        });
+        card.className = classObj.name;
+        let typeObj = await prisma.type.findUnique({
+          where: {
+            id: card.typeId,
+          },
+        });
+        card.typeName = typeObj.name;
+
+      })).then(() => {
+        res.send(cards);
+      }); 
+
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
@@ -189,7 +222,38 @@ router.route('/')
     }
   });
 
-router.route("/:id")
+  router.route('/name-generator')
+  .get(async function(req, res, next) {
+    try {
+      const names = await prisma.name.findMany();
+      const random = Math.floor(Math.random() * names.length) + 1;
+      const randomName = await prisma.name.findUnique({
+        where: {
+          id: random,
+        }
+      });
+
+      const surnames = await prisma.surname.findMany();
+      const randombis = Math.floor(Math.random() * surnames.length) + 1;
+      const randomSurname = await prisma.surname.findUnique({
+        where: {
+          id: randombis,
+        },
+      });
+
+      res.send({
+        name: randomName.name,
+        surname: randomSurname.name,
+      });
+    } catch(error) {
+      console.log(error.message);
+      res.status(500).json({
+        message:"Internal Server Error"
+      });
+    }
+  });
+
+  router.route("/:id")
   .get(async function(req, res, next) {
     /* Affichage unitaire */
     try {
@@ -197,9 +261,51 @@ router.route("/:id")
       const card = await prisma.card.findUnique({
         where: {
           id,
-        }
+        },
+        include: {
+          passive: {
+            include: {
+              condition: true,
+              ability: {
+                include: {
+                  skill: true,
+                }
+              },
+            }
+          },
+          actives: {
+            include: {
+              active: {
+                include: {
+                  ability: {
+                    include: {
+                      skill: true,
+                    }
+                  }
+                }
+              }
+            }
+          },
+        },
       });
+
+      let classObj = await prisma.class.findUnique({
+        where: {
+          id: card.classId,
+        },
+      });
+      card.className = classObj.name;
+
+      let typeObj = await prisma.type.findUnique({
+        where: {
+          id: card.typeId,
+        },
+      });
+      card.typeName = typeObj.name;
+
       res.send(card);
+
+  
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
@@ -409,36 +515,79 @@ router.route("/:id")
     }
   });
 
-router.route('/name-generator')
+  router.route("/:id/upload")
   .get(async function(req, res, next) {
+    /* Affichage unitaire */
     try {
-      const names = await prisma.name.findMany();
-      const random = Math.floor(Math.random() * names.length) + 1;
-      const randomName = await prisma.name.findUnique({
+      const id = parseInt(req.params.id);
+      const card = await prisma.card.findUnique({
         where: {
-          id: random,
-        }
-      });
-
-      const surnames = await prisma.surname.findMany();
-      const randombis = Math.floor(Math.random() * surnames.length) + 1;
-      const randomSurname = await prisma.surname.findUnique({
-        where: {
-          id: randombis,
+          id,
+        },
+        include: {
+          passive: {
+            include: {
+              condition: true,
+              ability: {
+                include: {
+                  skill: true,
+                }
+              },
+            }
+          },
+          actives: {
+            include: {
+              active: {
+                include: {
+                  ability: {
+                    include: {
+                      skill: true,
+                    }
+                  }
+                }
+              }
+            }
+          },
         },
       });
 
-      res.send({
-        name: randomName.name,
-        surname: randomSurname.name,
+      let classObj = await prisma.class.findUnique({
+        where: {
+          id: card.classId,
+        },
       });
+      card.className = classObj.name;
+
+      let typeObj = await prisma.type.findUnique({
+        where: {
+          id: card.typeId,
+        },
+      });
+      card.typeName = typeObj.name;
+
+      res.send(card);
+
+  
     } catch(error) {
       console.log(error.message);
       res.status(500).json({
         message:"Internal Server Error"
       });
     }
-  });
+  })
+  .post(upload.single('image'), async function(req, res, next) {
+    /* Upload d'image */
+    try { 
+      const file = req.file;
+      console.log(file);
+      res.send(file);
+    } catch(error) {
+      console.log(error);
+      res.status(500).json({
+        message:"Internal Server Error"
+      });
+    }
+  })
 
 module.exports = router;
 
